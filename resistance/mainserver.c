@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <time.h>
 
 #include <pthread.h>
 
@@ -53,6 +54,7 @@ struct joueur
 } tableauJoueurs[5];
 int roles[5];
 
+
 void sendMessage(int j, char *mess);
 void broadcast(char *message);
 
@@ -62,8 +64,27 @@ void error(const char *msg)
     exit(1);
 }
 
-void initRoles()
+void initRoles(int *roles)
 {
+	int i;
+	for(i=0;i<5;i++)
+	{
+		roles[i]=0;
+	}
+	srand(time(NULL)); // initialisation de rand
+	int case_aleatoire;
+	for(i=0; i<2; i++)  //attribue le role d'espion
+	{
+		do{
+	        case_aleatoire = rand()%5;
+		} while(roles[case_aleatoire]==1);
+		roles[case_aleatoire]=1;
+	}
+	for(i=0; i<5; i++)
+	{
+		printf("%d ", roles[i]);
+	}
+	printf("\n");
 }
 
 void *server(void *ptr)  //
@@ -153,8 +174,9 @@ void broadcast(char *message)   //diffuse le meme message à tous les joueurs
 
 }
 
-void sendRoles() //envoyer les roles une fois qu'on aura tiré au sort
+void sendRoles(roles) //envoyer les roles une fois qu'on aura tiré au sort
 {
+	
 }
 
 void sendMeneur()  // dis si on est meneur ou non , c'est le joueur a gauche
@@ -192,7 +214,7 @@ int main(int argc, char *argv[])
      compteurMissions=0;
      meneurCourant = 0;
      nbespions=1;
-     initRoles();  //à faire
+     initRoles(roles);  //à faire
 
     /* Create independent threads each of which will execute function */
 
